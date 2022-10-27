@@ -81,6 +81,7 @@ public class Neo4jDAO {
         Result result = this.session.run(query);
 
         return result.hasNext();
+    }
         
 
     public boolean checkRelationshipExists(String actorId, String movieId) {
