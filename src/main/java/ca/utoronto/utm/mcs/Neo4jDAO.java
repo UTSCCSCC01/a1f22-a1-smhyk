@@ -1,6 +1,7 @@
 package ca.utoronto.utm.mcs;
 
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
 import javax.inject.Inject;
@@ -41,5 +42,18 @@ public class Neo4jDAO {
         query = String.format(query, aid, mid);
         this.session.run(query);
         return;
+    }
+    public boolean checkActorExists(String actorId) {
+        String query;
+        query = "OPTIONAL MATCH (n:actor{actorId:\"%s\"})\n" +
+                "RETURN n IS NOT NULL AS Predicate";
+        query = String.format(query, actorId);
+        Result result = this.session.run(query);
+        String bool = result.next().toString();
+
+        if(bool.indexOf("TRUE") >= 0) {
+            return true;
+        }
+        return false;
     }
 }
