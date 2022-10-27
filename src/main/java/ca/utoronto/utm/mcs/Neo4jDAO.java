@@ -17,4 +17,12 @@ public class Neo4jDAO {
         this.driver = driver;
         this.session = driver.session();
     }
+
+    public void insertActor(String name, String actorId) {
+        String query;
+        query = "CREATE (n:actor {name: \"%s\", actorId: \"%s\"})";
+        query = String.format(query, name, actorId);
+        this.session.run(query);
+        return;
+    }
 }
