@@ -69,4 +69,16 @@ public class Neo4jDAO {
         }
         return false;
     }
+
+    public boolean hasRelationship(String actorId, String movieId) {
+        String query;
+        query = "MATCH (a:actor),(m:movie)" +
+                "WHERE (a)-[:ACTED_IN]->(m) AND a.actorId = \"%s\" AND m.movieId = \"%s\"" +
+                "RETURN a";
+
+        query = String.format(query, actorId, movieId);
+        Result result = this.session.run(query);
+
+        return result.hasNext();
+    }
 }
