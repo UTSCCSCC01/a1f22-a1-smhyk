@@ -32,4 +32,14 @@ public class Neo4jDAO {
         this.session.run(query);
         return;
     }
+    public void addRelationActed_In(String aid, String mid) {
+        String query;
+        query = "MATCH (a:actor),(m:movie)" +
+                "WHERE a.actorId = \"%s\" AND m.movieId = \"%s\"" +
+                "CREATE (a)-[r:ACTED_IN]->(m)" +
+                "RETURN type(r)";
+        query = String.format(query, aid, mid);
+        this.session.run(query);
+        return;
+    }
 }
