@@ -66,6 +66,34 @@ public class ReqHandler implements HttpHandler {
                 exchange.sendResponseHeaders(500, -1);
             }
         }
+        else if (exchange.getRequestURI().getPath().startsWith("/api/v1/addMovie")) {
+            String body = Utils.convert(exchange.getRequestBody());
+            try {
+                JSONObject deserialized = new JSONObject(body);
+
+                String name, movieId;
+
+                if (deserialized.length() == 2 && deserialized.has("name") && deserialized.has("movieId")) {
+                    name = deserialized.getString("name");
+                    movieId = deserialized.getString("movieId");
+                } else {
+                    exchange.sendResponseHeaders(400, -1);
+                    return;
+                }
+
+                try {
+                    this.neo4jDAO.insertMovie(name, movieId);
+                } catch (Exception e) {
+                    exchange.sendResponseHeaders(500, -1);
+                    e.printStackTrace();
+                    return;
+                }
+                exchange.sendResponseHeaders(200, -1);
+            } catch (Exception e) {
+                e.printStackTrace();
+                exchange.sendResponseHeaders(500, -1);
+            }
+        }
         else {
             throw new UnsupportedOperationException("Error: Invalid HTTP Verb");
         }

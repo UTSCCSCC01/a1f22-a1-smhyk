@@ -25,4 +25,11 @@ public class Neo4jDAO {
         this.session.run(query);
         return;
     }
+    public void insertMovie(String name, String movieId) {
+        String query;
+        query = "CREATE (n:movie {name: \"%s\", movieId: \"%s\"})";
+        query = String.format(query, name, movieId);
+        this.session.run(query);
+        return;
+    }
 }
