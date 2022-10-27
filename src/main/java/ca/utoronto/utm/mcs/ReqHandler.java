@@ -54,6 +54,10 @@ public class ReqHandler implements HttpHandler {
                 }
 
                 try {
+                    if(this.neo4jDAO.checkActorExists(actorId)) {
+                        exchange.sendResponseHeaders(400, -1);
+                        return;
+                    }
                     this.neo4jDAO.insertActor(name, actorId);
                 } catch (Exception e) {
                     exchange.sendResponseHeaders(500, -1);
