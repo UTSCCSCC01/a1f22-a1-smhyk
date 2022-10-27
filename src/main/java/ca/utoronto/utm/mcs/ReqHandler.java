@@ -118,7 +118,10 @@ public class ReqHandler implements HttpHandler {
                 }
 
                 try {
-                    //this.neo4jDAO.addRelationActed_In(actorId, movieId);
+                    if(this.neo4jDAO.checkRelationshipExists(actorId, movieId)) {
+                        exchange.sendResponseHeaders(400, -1);
+                        return;
+                    }
                     this.neo4jDAO.addRelationActed_In(actorId, movieId);
                 } catch (Exception e) {
                     exchange.sendResponseHeaders(500, -1);

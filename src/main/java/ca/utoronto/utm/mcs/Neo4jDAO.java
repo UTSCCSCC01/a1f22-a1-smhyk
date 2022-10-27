@@ -69,4 +69,20 @@ public class Neo4jDAO {
         }
         return false;
     }
+    public boolean checkRelationshipExists(String actorId, String movieId) {
+        String query;
+        query = "MATCH ({actorId : \"%s\"})-[r]->({movieId : \"%s\"})\n" +
+                "RETURN type(r) as type";
+        query = String.format(query, actorId, movieId);
+        Result result = this.session.run(query);
+        if(!result.hasNext()) {
+            return false;
+        }
+        String bool = result.next().toString();
+
+        if(bool != null) {
+            return true;
+        }
+        return false;
+    }
 }
