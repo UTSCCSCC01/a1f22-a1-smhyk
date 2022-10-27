@@ -10,6 +10,14 @@ public class App
     public static void main(String[] args) throws IOException
     {
         // TODO Create Your Server Context Here, There Should Only Be One Context
+        ReqHandlerComponent component = DaggerReqHandlerComponent.create();
+        ReqHandler reqHandler = component.buildHandler();
+
+        ServerComponent serverComponent = DaggerServerComponent.create();
+        Server server = serverComponent.buildServer();
+
+        server.server.createContext("/api/v1", reqHandler);
+        server.server.start();
         System.out.printf("Server started on port %d\n", port);
 
         // This code is used to get the neo4j address, you must use this so that we can mark :)
