@@ -56,4 +56,17 @@ public class Neo4jDAO {
         }
         return false;
     }
+    public boolean checkMovieExists(String movieId) {
+        String query;
+        query = "OPTIONAL MATCH (n:movie{movieId:\"%s\"})\n" +
+                "RETURN n IS NOT NULL AS Predicate";
+        query = String.format(query, movieId);
+        Result result = this.session.run(query);
+        String bool = result.next().toString();
+
+        if(bool.indexOf("TRUE") >= 0) {
+            return true;
+        }
+        return false;
+    }
 }
