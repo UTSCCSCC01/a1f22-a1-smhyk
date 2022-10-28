@@ -86,6 +86,53 @@ public class ReqHandler implements HttpHandler {
                 exchange.sendResponseHeaders(500, -1);
             }
         }
+        else if (exchange.getRequestURI().getPath().startsWith("/api/v1/getMovie")) {
+            String body = Utils.convert(exchange.getRequestBody());
+            try {
+                JSONObject deserialized = new JSONObject(body);
+
+                String movieId;
+
+                if (deserialized.length() == 1 && deserialized.has("movieId")) {
+                    movieId = deserialized.getString("movieId");
+                } else {
+                    exchange.sendResponseHeaders(400, -1);
+                    return;
+                }
+                try {
+                    if(!this.neo4jDAO.checkMovieExists(movieId)) {
+                        exchange.sendResponseHeaders(404, -1);
+                        return;
+                    }
+                    String movieName = this.neo4jDAO.getMovieName(movieId);
+                    //List<String> movies = this.neo4jDAO.getActorMovies(actorId);
+                    String[] actors = this.neo4jDAO.getMovieActors(movieId);
+
+                    JSONObject response = new JSONObject();
+                    response.put("movieId", movieId);
+                    response.put("name", movieName);
+                    response.put("movies", new JSONArray(actors));
+
+                    //System.out.println(Arrays.toString(movies.toArray()));
+                    byte[] b = response.toString().replace("\\\"","").getBytes();
+                    if (b==null){
+                        exchange.sendResponseHeaders(404, -1);
+                        return;
+                    }
+                    exchange.sendResponseHeaders(200, b.length);
+                    OutputStream os = exchange.getResponseBody();
+                    os.write(b);
+                    os.close();
+                } catch (Exception e) {
+                    exchange.sendResponseHeaders(500, -1);
+                    e.printStackTrace();
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                exchange.sendResponseHeaders(500, -1);
+            }
+        }
         else if (exchange.getRequestURI().getPath().startsWith("/api/v1/hasRelationship")) {
             String body = Utils.convert(exchange.getRequestBody());
             try {

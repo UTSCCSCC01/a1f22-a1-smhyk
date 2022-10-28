@@ -130,6 +130,33 @@ public class Neo4jDAO {
         }
         return movies;
     }
+    public String[] getMovieActors(String movieId) {
+        String query;
+        query = "MATCH (m:movie {movieId: \"%s\"})\n" +
+                "OPTIONAL MATCH (x)-->(m)\n" +
+                "RETURN x.name";
+        query = String.format(query, movieId);
+        Result result = this.session.run(query);
+
+        String actorName, res;
+        int startIndex, endIndex;
+
+        List<String> actor = new ArrayList<String>();
+        while(result.hasNext()) {
+            res = result.next().toString();
+            startIndex = res.indexOf("\"") + 1;
+            endIndex = res.indexOf("\"", startIndex);
+            actorName = res.substring(startIndex, endIndex);
+            //System.out.println("Output: "+movieName);
+            actor.add(actorName);
+        }
+        String[] actors = new String[actor.size()];
+
+        for (int i=0; i<actor.size(); i++) {
+            actors[i] = actor.get(i);
+        }
+        return actors;
+    }
     public String getActorName(String actorId) {
         String query;
         query = "MATCH (a:actor {actorId: \"%s\"})\n" +
@@ -146,6 +173,23 @@ public class Neo4jDAO {
         String actorName = res.substring(startIndex, endIndex);
 
         return actorName;
+    }
+    public String getMovieName(String movieId) {
+        String query;
+        query = "MATCH (m:movie {movieId: \"%s\"})\n" +
+                "RETURN m.name";
+        query = String.format(query, movieId);
+        Result result = this.session.run(query);
+
+        String res = result.next().toString();
+
+        int startIndex, endIndex;
+        startIndex = res.indexOf("\"") + 1;
+        endIndex = res.indexOf("\"", startIndex);
+
+        String movieName = res.substring(startIndex, endIndex);
+
+        return movieName;
     }
 
     public int getBaconNumber(String actorId) {
