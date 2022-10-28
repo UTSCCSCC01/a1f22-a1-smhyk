@@ -5,6 +5,8 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 // All your database transactions or queries should
 // go in this class
@@ -100,6 +102,50 @@ public class Neo4jDAO {
         }
         return false;
 
+    }
+    public String[] getActorMovies(String actorId) {
+        String query;
+        query = "MATCH (a:actor {actorId: \"%s\"})\n" +
+                "OPTIONAL MATCH (a)-->(x)\n" +
+                "RETURN x.name";
+        query = String.format(query, actorId);
+        Result result = this.session.run(query);
+
+        String movieName, res;
+        int startIndex, endIndex;
+
+        List<String> movie = new ArrayList<String>();
+        while(result.hasNext()) {
+            res = result.next().toString();
+            startIndex = res.indexOf("\"") + 1;
+            endIndex = res.indexOf("\"", startIndex);
+            movieName = res.substring(startIndex, endIndex);
+            //System.out.println("Output: "+movieName);
+            movie.add(movieName);
+        }
+        String[] movies = new String[movie.size()];
+
+        for (int i=0; i<movie.size(); i++) {
+            movies[i] = movie.get(i);
+        }
+        return movies;
+    }
+    public String getActorName(String actorId) {
+        String query;
+        query = "MATCH (a:actor {actorId: \"%s\"})\n" +
+                "RETURN a.name";
+        query = String.format(query, actorId);
+        Result result = this.session.run(query);
+
+        String res = result.next().toString();
+
+        int startIndex, endIndex;
+        startIndex = res.indexOf("\"") + 1;
+        endIndex = res.indexOf("\"", startIndex);
+
+        String actorName = res.substring(startIndex, endIndex);
+
+        return actorName;
     }
 
     public int getBaconNumber(String actorId) {
