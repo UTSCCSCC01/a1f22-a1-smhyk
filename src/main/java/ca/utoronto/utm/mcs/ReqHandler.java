@@ -68,6 +68,44 @@ public class ReqHandler implements HttpHandler {
                     OutputStream o = exchange.getResponseBody();
                     o.write(val);
                     o.close();
+                    return;
+                } catch (Exception e) {
+                    exchange.sendResponseHeaders(500, -1);
+                    e.printStackTrace();
+                    return;
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+                exchange.sendResponseHeaders(500, -1);
+            }
+        } else if (exchange.getRequestURI().getPath().startsWith("/api/v1/computeBaconNumber")) {
+            String body = Utils.convert(exchange.getRequestBody());
+            try {
+                JSONObject deserialized = new JSONObject(body);
+
+                String actorId;
+
+                if (deserialized.length() == 1 && deserialized.has("actorId")) {
+                    actorId = deserialized.getString("actorId");
+                } else {
+                    exchange.sendResponseHeaders(400, -1);
+                    return;
+                }
+                try {
+                    int retVal = this.neo4jDAO.getBaconNumber(actorId);
+                    if(this.neo4jDAO.checkActorExists(actorId) == false || retVal == 0){
+                        exchange.sendResponseHeaders(404, -1);
+                        return;
+                    }
+                    JSONObject retObj = new JSONObject();
+                    retObj.put("baconNumber", retVal);
+
+                    byte[] val = retObj.toString().replace("\\\"", "").getBytes();
+                    exchange.sendResponseHeaders(200, val.length);
+                    OutputStream o = exchange.getResponseBody();
+                    o.write(val);
+                    o.close();
+                    return;
 
                 } catch (Exception e) {
                     exchange.sendResponseHeaders(500, -1);
