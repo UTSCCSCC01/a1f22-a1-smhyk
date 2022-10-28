@@ -76,6 +76,7 @@ public class ReqHandler implements HttpHandler {
                     OutputStream os = exchange.getResponseBody();
                     os.write(b);
                     os.close();
+                    return;
                 } catch (Exception e) {
                     exchange.sendResponseHeaders(500, -1);
                     e.printStackTrace();
@@ -269,6 +270,7 @@ public class ReqHandler implements HttpHandler {
     }
     public void handlePut(HttpExchange exchange) throws IOException, JSONException {
         if (exchange.getRequestURI().getPath().startsWith("/api/v1/addActor")) {
+            System.out.println("WORKS!");
             String body = Utils.convert(exchange.getRequestBody());
             try {
                 JSONObject deserialized = new JSONObject(body);
@@ -295,6 +297,7 @@ public class ReqHandler implements HttpHandler {
                     return;
                 }
                 exchange.sendResponseHeaders(200, -1);
+                return;
             } catch (Exception e) {
                 e.printStackTrace();
                 exchange.sendResponseHeaders(500, -1);
