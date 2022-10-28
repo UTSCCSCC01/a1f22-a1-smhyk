@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,7 +39,54 @@ public class ReqHandler implements HttpHandler {
     }
     public void handleGet(HttpExchange exchange) throws IOException, JSONException {
         // To DO: Complete this function
-        if (exchange.getRequestURI().getPath().startsWith("/api/v1/hasRelationship")) {
+        if (exchange.getRequestURI().getPath().startsWith("/api/v1/getActor")) {
+            String body = Utils.convert(exchange.getRequestBody());
+            try {
+                JSONObject deserialized = new JSONObject(body);
+
+                String actorId;
+
+                if (deserialized.length() == 1 && deserialized.has("actorId")) {
+                    actorId = deserialized.getString("actorId");
+                } else {
+                    exchange.sendResponseHeaders(400, -1);
+                    return;
+                }
+                try {
+                    if(!this.neo4jDAO.checkActorExists(actorId)) {
+                        exchange.sendResponseHeaders(404, -1);
+                        return;
+                    }
+                    String actorName = this.neo4jDAO.getActorName(actorId);
+                    //List<String> movies = this.neo4jDAO.getActorMovies(actorId);
+                    String[] movies = this.neo4jDAO.getActorMovies(actorId);
+
+                    JSONObject response = new JSONObject();
+                    response.put("actorId", actorId);
+                    response.put("name", actorName);
+                    response.put("movies", new JSONArray(movies));
+
+                    //System.out.println(Arrays.toString(movies.toArray()));
+                    byte[] b = response.toString().replace("\\\"","").getBytes();
+                    if (b==null){
+                        exchange.sendResponseHeaders(404, -1);
+                        return;
+                    }
+                    exchange.sendResponseHeaders(200, b.length);
+                    OutputStream os = exchange.getResponseBody();
+                    os.write(b);
+                    os.close();
+                } catch (Exception e) {
+                    exchange.sendResponseHeaders(500, -1);
+                    e.printStackTrace();
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                exchange.sendResponseHeaders(500, -1);
+            }
+        }
+        else if (exchange.getRequestURI().getPath().startsWith("/api/v1/hasRelationship")) {
             String body = Utils.convert(exchange.getRequestBody());
             try {
                 JSONObject deserialized = new JSONObject(body);
@@ -116,6 +164,9 @@ public class ReqHandler implements HttpHandler {
                 e.printStackTrace();
                 exchange.sendResponseHeaders(500, -1);
             }
+        }
+        else {
+            throw new UnsupportedOperationException("Error: invalid http verb");
         }
     }
     public void handlePut(HttpExchange exchange) throws IOException, JSONException {
