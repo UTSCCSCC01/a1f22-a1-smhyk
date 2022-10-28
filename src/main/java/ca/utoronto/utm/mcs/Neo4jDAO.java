@@ -1,6 +1,7 @@
 package ca.utoronto.utm.mcs;
 
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 
@@ -203,5 +204,25 @@ public class Neo4jDAO {
             return (value/2);
         }
         return 0;
+    }
+
+    public String[] getBaconPath(String actorId) {
+        int num = getBaconNumber(actorId);
+        String[] actors = new String[num + 1];
+
+        String query;
+        query = "MATCH p = shortestPath((a: actor {actorId: \"%s\"})-[*]-(b: actor {actorId: \"nm0000102\"})) UNWIND nodes(p) AS n RETURN COALESCE(n.actorId, n.movieId) AS list";
+        query = String.format(query, actorId);
+        Result result = this.session.run(query);
+
+        if (result.hasNext()) {
+            List<Record> record = result.list();
+            for (int i = 0; i < record.size(); i += 2) {
+                String val = record.get(i).values().toString();
+                String newVal = val.substring(1, val.length() - 1);
+                actors[i / 2] = newVal;
+            }
+        }
+        return actors;
     }
 }
