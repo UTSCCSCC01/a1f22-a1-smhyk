@@ -101,4 +101,17 @@ public class Neo4jDAO {
         return false;
 
     }
+
+    public int getBaconNumber(String actorId) {
+        String query;
+        query = "MATCH p = shortestPath((bacon: actor {actorId: \"nm0000102\"})-[*]-(a: actor {actorId: \"%s\"}))" +
+                "RETURN length(p)";
+        query = String.format(query, actorId);
+        Result result = this.session.run(query);
+        if(result.hasNext()){
+            int value = Integer.parseInt(result.next().toString().replaceAll("[^0-9]", ""));
+            return (value/2);
+        }
+        return 0;
+    }
 }
