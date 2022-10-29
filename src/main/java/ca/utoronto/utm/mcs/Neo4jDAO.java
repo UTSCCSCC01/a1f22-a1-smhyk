@@ -114,16 +114,23 @@ public class Neo4jDAO {
 
         String movieName, res;
         int startIndex, endIndex;
+        String[] empty = new String[0];
 
         List<String> movie = new ArrayList<String>();
+        //System.out.println("Length Start: "+movie.size());
+        //System.out.println("Output: "+result.next().toString());
         while(result.hasNext()) {
             res = result.next().toString();
             startIndex = res.indexOf("\"") + 1;
             endIndex = res.indexOf("\"", startIndex);
+            if(endIndex < startIndex) {
+                break;
+            }
             movieName = res.substring(startIndex, endIndex);
             //System.out.println("Output: "+movieName);
             movie.add(movieName);
         }
+        //System.out.println("Length End: "+movie.size());
         String[] movies = new String[movie.size()];
 
         for (int i=0; i<movie.size(); i++) {
@@ -135,11 +142,11 @@ public class Neo4jDAO {
         String query;
         query = "MATCH (m:movie {movieId: \"%s\"})\n" +
                 "OPTIONAL MATCH (x)-->(m)\n" +
-                "RETURN x.name";
+                "RETURN x.actorId";
         query = String.format(query, movieId);
         Result result = this.session.run(query);
 
-        String actorName, res;
+        String actorID, res;
         int startIndex, endIndex;
 
         List<String> actor = new ArrayList<String>();
@@ -147,9 +154,12 @@ public class Neo4jDAO {
             res = result.next().toString();
             startIndex = res.indexOf("\"") + 1;
             endIndex = res.indexOf("\"", startIndex);
-            actorName = res.substring(startIndex, endIndex);
+            if(endIndex < startIndex) {
+                break;
+            }
+            actorID = res.substring(startIndex, endIndex);
             //System.out.println("Output: "+movieName);
-            actor.add(actorName);
+            actor.add(actorID);
         }
         String[] actors = new String[actor.size()];
 
