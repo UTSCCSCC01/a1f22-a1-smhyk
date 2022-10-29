@@ -22,9 +22,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 16
-      - name: Sleep for 30 seconds to ensure neo4j is synced
-        run: sleep 30s
-        shell: bash
       - name: maven clean
         run: mvn verify clean --fail-never
       - name: build work
