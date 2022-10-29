@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 
 @Module
 public class ServerModule {
-    // TODO Complete This Module
+    //Created the Provides module for HttpServer to instantiate a httpserver with the valid hostname and Port number
     static int PORT = 8080;
     @Provides
     HttpServer provideHttpServer() throws RuntimeException {
