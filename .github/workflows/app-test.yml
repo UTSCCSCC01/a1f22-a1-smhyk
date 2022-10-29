@@ -1,4 +1,5 @@
 name: app-test
+runs-on: self-hosted
 
 on:
   push:
