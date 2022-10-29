@@ -24,14 +24,14 @@ public class Neo4jDAO {
 
     public void insertActor(String name, String actorId) {
         String query;
-        query = "CREATE (n:actor {name: \"%s\", actorId: \"%s\"})";
+        query = "CREATE (n:actor {Name: \"%s\", id: \"%s\"})";
         query = String.format(query, name, actorId);
         this.session.run(query);
         return;
     }
     public void insertMovie(String name, String movieId) {
         String query;
-        query = "CREATE (n:movie {name: \"%s\", movieId: \"%s\"})";
+        query = "CREATE (n:movie {Name: \"%s\", id: \"%s\"})";
         query = String.format(query, name, movieId);
         this.session.run(query);
         return;
@@ -39,7 +39,7 @@ public class Neo4jDAO {
     public void addRelationActed_In(String aid, String mid) {
         String query;
         query = "MATCH (a:actor),(m:movie)" +
-                "WHERE a.actorId = \"%s\" AND m.movieId = \"%s\"" +
+                "WHERE a.id = \"%s\" AND m.id = \"%s\"" +
                 "CREATE (a)-[r:ACTED_IN]->(m)" +
                 "RETURN type(r)";
         query = String.format(query, aid, mid);
@@ -48,7 +48,7 @@ public class Neo4jDAO {
     }
     public boolean checkActorExists(String actorId) {
         String query;
-        query = "OPTIONAL MATCH (n:actor{actorId:\"%s\"})\n" +
+        query = "OPTIONAL MATCH (n:actor{id:\"%s\"})\n" +
                 "RETURN n IS NOT NULL AS Predicate";
         query = String.format(query, actorId);
         Result result = this.session.run(query);
@@ -61,7 +61,7 @@ public class Neo4jDAO {
     }
     public boolean checkMovieExists(String movieId) {
         String query;
-        query = "OPTIONAL MATCH (n:movie{movieId:\"%s\"})\n" +
+        query = "OPTIONAL MATCH (n:movie{id:\"%s\"})\n" +
                 "RETURN n IS NOT NULL AS Predicate";
         query = String.format(query, movieId);
         Result result = this.session.run(query);
@@ -77,7 +77,7 @@ public class Neo4jDAO {
     public boolean hasRelationship(String actorId, String movieId) {
         String query;
         query = "MATCH (a:actor),(m:movie)" +
-                "WHERE (a)-[:ACTED_IN]->(m) AND a.actorId = \"%s\" AND m.movieId = \"%s\"" +
+                "WHERE (a)-[:ACTED_IN]->(m) AND a.id = \"%s\" AND m.id = \"%s\"" +
                 "RETURN a";
 
         query = String.format(query, actorId, movieId);
@@ -89,7 +89,7 @@ public class Neo4jDAO {
 
     public boolean checkRelationshipExists(String actorId, String movieId) {
         String query;
-        query = "MATCH ({actorId : \"%s\"})-[r]->({movieId : \"%s\"})\n" +
+        query = "MATCH ({id : \"%s\"})-[r]->({id : \"%s\"})\n" +
                 "RETURN type(r) as type";
         query = String.format(query, actorId, movieId);
         Result result = this.session.run(query);
@@ -106,9 +106,9 @@ public class Neo4jDAO {
     }
     public String[] getActorMovies(String actorId) {
         String query;
-        query = "MATCH (a:actor {actorId: \"%s\"})\n" +
+        query = "MATCH (a:actor {id: \"%s\"})\n" +
                 "OPTIONAL MATCH (a)-->(x)\n" +
-                "RETURN x.name";
+                "RETURN x.Name";
         query = String.format(query, actorId);
         Result result = this.session.run(query);
 
@@ -140,9 +140,9 @@ public class Neo4jDAO {
     }
     public String[] getMovieActors(String movieId) {
         String query;
-        query = "MATCH (m:movie {movieId: \"%s\"})\n" +
+        query = "MATCH (m:movie {id: \"%s\"})\n" +
                 "OPTIONAL MATCH (x)-->(m)\n" +
-                "RETURN x.actorId";
+                "RETURN x.id";
         query = String.format(query, movieId);
         Result result = this.session.run(query);
 
@@ -170,8 +170,8 @@ public class Neo4jDAO {
     }
     public String getActorName(String actorId) {
         String query;
-        query = "MATCH (a:actor {actorId: \"%s\"})\n" +
-                "RETURN a.name";
+        query = "MATCH (a:actor {id: \"%s\"})\n" +
+                "RETURN a.Name";
         query = String.format(query, actorId);
         Result result = this.session.run(query);
 
@@ -187,8 +187,8 @@ public class Neo4jDAO {
     }
     public String getMovieName(String movieId) {
         String query;
-        query = "MATCH (m:movie {movieId: \"%s\"})\n" +
-                "RETURN m.name";
+        query = "MATCH (m:movie {id: \"%s\"})\n" +
+                "RETURN m.Name";
         query = String.format(query, movieId);
         Result result = this.session.run(query);
 
@@ -205,7 +205,7 @@ public class Neo4jDAO {
 
     public int getBaconNumber(String actorId) {
         String query;
-        query = "MATCH p = shortestPath((bacon: actor {actorId: \"nm0000102\"})-[*]-(a: actor {actorId: \"%s\"}))" +
+        query = "MATCH p = shortestPath((bacon: actor {id: \"nm0000102\"})-[*]-(a: actor {id: \"%s\"}))" +
                 "RETURN length(p)";
         query = String.format(query, actorId);
         Result result = this.session.run(query);
@@ -221,7 +221,7 @@ public class Neo4jDAO {
         String[] actors = new String[num + 1];
 
         String query;
-        query = "MATCH p = shortestPath((a: actor {actorId: \"%s\"})-[*]-(b: actor {actorId: \"nm0000102\"})) UNWIND nodes(p) AS n RETURN COALESCE(n.actorId, n.movieId) AS list";
+        query = "MATCH p = shortestPath((a: actor {id: \"%s\"})-[*]-(b: actor {id: \"nm0000102\"})) UNWIND nodes(p) AS n RETURN COALESCE(n.id) AS list";
         query = String.format(query, actorId);
         Result result = this.session.run(query);
 
