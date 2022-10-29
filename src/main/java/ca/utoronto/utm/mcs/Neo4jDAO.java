@@ -254,6 +254,7 @@ public class Neo4jDAO {
         return actors;
     }
 
+    //Delete the whole database
     public void removeDatabase(){
         String query;
         query = "MATCH (n) DETACH DELETE n";
