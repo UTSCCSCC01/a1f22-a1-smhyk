@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 import javax.inject.Inject;
 
 public class Server {
-    // TODO Complete This Class
+    //Injected the HttpServer object into the constructor of Server
     HttpServer server;
 
     @Inject

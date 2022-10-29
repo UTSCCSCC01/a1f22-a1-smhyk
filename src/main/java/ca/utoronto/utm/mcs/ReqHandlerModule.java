@@ -8,7 +8,7 @@ import org.neo4j.driver.GraphDatabase;
 
 @Module
 public class ReqHandlerModule {
-    // TODO Complete This Module
+    // Created the Provides module for Driver to instantiate a driver with the valid URL and aAuthentication token
     private final String uriDb = "bolt://localhost:7687";
     private final String username = "neo4j";
     private final String password = "123456";

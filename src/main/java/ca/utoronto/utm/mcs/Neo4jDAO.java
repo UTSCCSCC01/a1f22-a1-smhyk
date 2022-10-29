@@ -12,16 +12,17 @@ import java.util.List;
 // All your database transactions or queries should
 // go in this class
 public class Neo4jDAO {
-    // TODO Complete This Class
     private final Session session;
     private final Driver driver;
 
     @Inject
     public Neo4jDAO(Driver driver) {
+        // Injected Driver (org.neo4j.driver) into the constructor of Neo4jDAO and instantiated the session
         this.driver = driver;
         this.session = driver.session();
     }
 
+   //Inserts actor into the database with the given name and actorId
     public void insertActor(String name, String actorId) {
         String query;
         query = "CREATE (n:actor {Name: \"%s\", id: \"%s\"})";
@@ -29,6 +30,8 @@ public class Neo4jDAO {
         this.session.run(query);
         return;
     }
+
+    //Inserts movie into the database with the given name and movieId
     public void insertMovie(String name, String movieId) {
         String query;
         query = "CREATE (n:movie {Name: \"%s\", id: \"%s\"})";
@@ -36,6 +39,8 @@ public class Neo4jDAO {
         this.session.run(query);
         return;
     }
+
+    //Adds a relation between the given actor id aid and movie id mid
     public void addRelationActed_In(String aid, String mid) {
         String query;
         query = "MATCH (a:actor),(m:movie)" +
@@ -46,6 +51,8 @@ public class Neo4jDAO {
         this.session.run(query);
         return;
     }
+
+    //Checks if an actor with id actorId already exists in the database
     public boolean checkActorExists(String actorId) {
         String query;
         query = "OPTIONAL MATCH (n:actor{id:\"%s\"})\n" +
@@ -59,6 +66,8 @@ public class Neo4jDAO {
         }
         return false;
     }
+
+    //Checks if a movie with id movieId already exists in the database
     public boolean checkMovieExists(String movieId) {
         String query;
         query = "OPTIONAL MATCH (n:movie{id:\"%s\"})\n" +
@@ -73,7 +82,7 @@ public class Neo4jDAO {
         return false;
     }
 
-
+    //Checks if there is a relationship between an actor with id actorId and movie with id movieId
     public boolean hasRelationship(String actorId, String movieId) {
         String query;
         query = "MATCH (a:actor),(m:movie)" +
@@ -85,7 +94,6 @@ public class Neo4jDAO {
 
         return result.hasNext();
     }
-        
 
     public boolean checkRelationshipExists(String actorId, String movieId) {
         String query;
@@ -104,6 +112,8 @@ public class Neo4jDAO {
         return false;
 
     }
+
+    //Returns a list of movies an actor with id actorId has acted in
     public String[] getActorMovies(String actorId) {
         String query;
         query = "MATCH (a:actor {id: \"%s\"})\n" +
@@ -138,6 +148,8 @@ public class Neo4jDAO {
         }
         return movies;
     }
+
+    //Returns a list of actors in a movie with id movieId
     public String[] getMovieActors(String movieId) {
         String query;
         query = "MATCH (m:movie {id: \"%s\"})\n" +
@@ -168,6 +180,8 @@ public class Neo4jDAO {
         }
         return actors;
     }
+
+    //Returns the name of the actor with id actorId
     public String getActorName(String actorId) {
         String query;
         query = "MATCH (a:actor {id: \"%s\"})\n" +
@@ -185,6 +199,8 @@ public class Neo4jDAO {
 
         return actorName;
     }
+
+    //Returns the name of the movie with id movieId
     public String getMovieName(String movieId) {
         String query;
         query = "MATCH (m:movie {id: \"%s\"})\n" +
@@ -203,6 +219,7 @@ public class Neo4jDAO {
         return movieName;
     }
 
+    //Returns the Bacon number of an actor with id actorId
     public int getBaconNumber(String actorId) {
         String query;
         query = "MATCH p = shortestPath((bacon: actor {id: \"nm0000102\"})-[*]-(a: actor {id: \"%s\"}))" +
@@ -216,6 +233,7 @@ public class Neo4jDAO {
         return 0;
     }
 
+    //Returns a list of actors in the Bacon path of actor with id actorId
     public String[] getBaconPath(String actorId) {
         int num = getBaconNumber(actorId);
         String[] actors = new String[num + 1];

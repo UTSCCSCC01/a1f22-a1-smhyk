@@ -9,7 +9,7 @@ public class App
 
     public static void main(String[] args) throws IOException
     {
-        // TODO Create Your Server Context Here, There Should Only Be One Context
+        // Created the Server context using the dagger components for ReqHandler and ServerComponent
         ReqHandlerComponent component = DaggerReqHandlerComponent.create();
         ReqHandler reqHandler = component.buildHandler();
 
