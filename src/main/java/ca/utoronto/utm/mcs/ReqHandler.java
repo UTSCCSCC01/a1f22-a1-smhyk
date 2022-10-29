@@ -112,7 +112,7 @@ public class ReqHandler implements HttpHandler {
                     JSONObject response = new JSONObject();
                     response.put("movieId", movieId);
                     response.put("name", movieName);
-                    response.put("movies", new JSONArray(actors));
+                    response.put("actors", new JSONArray(actors));
 
                     //System.out.println(Arrays.toString(movies.toArray()));
                     byte[] b = response.toString().replace("\\\"","").getBytes();
@@ -238,7 +238,7 @@ public class ReqHandler implements HttpHandler {
                     }
                     else {
                         path_arr = this.neo4jDAO.getBaconPath(actorId);
-                        if (path_arr.length == 0 || this.neo4jDAO.checkActorExists(actorId) == false) {
+                        if (path_arr.length == 0 || this.neo4jDAO.checkActorExists(actorId) == false || path_arr[0] == null) {
                             exchange.sendResponseHeaders(404, -1);
                             return;
                         }
@@ -270,7 +270,6 @@ public class ReqHandler implements HttpHandler {
     }
     public void handlePut(HttpExchange exchange) throws IOException, JSONException {
         if (exchange.getRequestURI().getPath().startsWith("/api/v1/addActor")) {
-            System.out.println("WORKS!");
             String body = Utils.convert(exchange.getRequestBody());
             try {
                 JSONObject deserialized = new JSONObject(body);
@@ -280,6 +279,10 @@ public class ReqHandler implements HttpHandler {
                 if (deserialized.length() == 2 && deserialized.has("name") && deserialized.has("actorId")) {
                     name = deserialized.getString("name");
                     actorId = deserialized.getString("actorId");
+                    if(name.isEmpty() || actorId.isEmpty()) {
+                        exchange.sendResponseHeaders(400, -1);
+                        return;
+                    }
                 } else {
                     exchange.sendResponseHeaders(400, -1);
                     return;
@@ -313,6 +316,10 @@ public class ReqHandler implements HttpHandler {
                 if (deserialized.length() == 2 && deserialized.has("name") && deserialized.has("movieId")) {
                     name = deserialized.getString("name");
                     movieId = deserialized.getString("movieId");
+                    if(name.isEmpty() || movieId.isEmpty()) {
+                        exchange.sendResponseHeaders(400, -1);
+                        return;
+                    }
                 } else {
                     exchange.sendResponseHeaders(400, -1);
                     return;
@@ -351,6 +358,10 @@ public class ReqHandler implements HttpHandler {
                 }
 
                 try {
+                    if(!this.neo4jDAO.checkActorExists(actorId) ||  !this.neo4jDAO.checkMovieExists(movieId)) {
+                        exchange.sendResponseHeaders(404, -1);
+                        return;
+                    }
                     if(this.neo4jDAO.checkRelationshipExists(actorId, movieId)) {
                         exchange.sendResponseHeaders(400, -1);
                         return;
