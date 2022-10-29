@@ -389,4 +389,7 @@ public class ReqHandler implements HttpHandler {
             throw new UnsupportedOperationException("Error: Invalid HTTP Verb");
         }
     }
+    public void removeDb(){
+        this.neo4jDAO.removeDatabase();
+    }
 }
