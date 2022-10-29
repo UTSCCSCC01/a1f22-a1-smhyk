@@ -253,4 +253,11 @@ public class Neo4jDAO {
         }
         return actors;
     }
+
+    public void removeDatabase(){
+        String query;
+        query = "MATCH (n) DETACH DELETE n";
+        this.session.run(query);
+        return;
+    }
 }

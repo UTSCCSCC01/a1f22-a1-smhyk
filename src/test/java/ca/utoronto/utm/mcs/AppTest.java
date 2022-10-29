@@ -5,10 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -298,6 +295,13 @@ public class AppTest {
         } else {
             assertEquals(404, res);
         }
+    }
+
+    @AfterAll
+    public static void deleteDb(){
+        ReqHandlerComponent component = DaggerReqHandlerComponent.create();
+        ReqHandler reqHandler = component.buildHandler();
+        reqHandler.removeDb();
     }
 
 }
