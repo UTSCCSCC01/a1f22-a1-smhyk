@@ -1,8 +1,8 @@
 ## CI/CD  
 - Number of unique test cases written by the group
-Your Mark:  10 / 16  
+Your Mark:  13 / 16  
 
--6 for non deterministic tests -- why are there if statements in tests??
+-3 for non deterministic tests -- why are there if statements in tests??
 
 ## DAGGER   
 - Correct Inject Statements  
